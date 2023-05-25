@@ -1,5 +1,5 @@
 {
-  "name": "@projektionisten/verdaccio-bitbucket-cloud",
+  "name": "verdaccio-bitbucket-cloud",
   "version": "0.0.1",
   "description": "Auth plugin for bitbucket cloud API",
   "main": "lib/src/index.js",
