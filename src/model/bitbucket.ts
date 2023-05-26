@@ -1,6 +1,7 @@
 import {
 	Logger
 } from '@verdaccio/types';
+import fetch from 'node-fetch';
 
 const API_URL = 'https://api.bitbucket.org';
 const API_VERSION = '2.0';
@@ -44,7 +45,7 @@ export class Bitbucket {
 					})
 				})
 				.then((response) => response.json())
-				.then((response) => {
+				.then((response: any) => {
 					// this.logger.debug("getTeams: " + JSON.stringify(response, null, 2));
 					const teamValues: Array<string> = response?.values?.map((x) => x.slug);
 					if (teamValues !== undefined && teamValues.length !== 0) {
