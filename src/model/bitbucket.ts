@@ -1,7 +1,6 @@
 import {
 	Logger
 } from '@verdaccio/types';
-import fetch from 'node-fetch';
 
 const API_URL = 'https://api.bitbucket.org';
 const API_VERSION = '2.0';

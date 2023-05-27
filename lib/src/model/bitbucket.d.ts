@@ -4,7 +4,7 @@ export declare class Bitbucket {
     private password;
     private logger;
     constructor(username: any, password: any, logger: any);
-    getUser(): Promise<unknown>;
+    getUser(): Promise<any>;
     getTeams(role: string): Promise<{
         role: string;
         teams: Array<string>;
