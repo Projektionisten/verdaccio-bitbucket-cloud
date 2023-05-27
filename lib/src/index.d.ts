@@ -32,6 +32,7 @@ export default class AuthCustomPlugin implements IPluginAuth<CustomConfig> {
      */
     allow_publish(user: RemoteUser, pkg: PackageAccess, cb: AuthAccessCallback): void;
     allow_unpublish(user: RemoteUser, pkg: PackageAccess, cb: AuthAccessCallback): void;
+    private matchAccessRules;
     /**
      * Parses config allow option and returns result
      *

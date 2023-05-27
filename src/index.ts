@@ -1,3 +1,4 @@
+import { getUnauthorized } from '@verdaccio/commons-api';
 import {
 	AuthAccessCallback,
 	AuthCallback,
@@ -13,6 +14,9 @@ import { ALLOWED_CACHE_ENGINES, CACHE_ENGINE, DEFAULT_CACHE_TTL } from './consta
 import { Bitbucket } from './model/bitbucket';
 import { Hasher } from './passwordHasher';
 import { getRedisClient } from './redis';
+
+const $ALL = '$all';
+const $AUTH = '$authenticated';
 
 /**
  * Custom Verdaccio Authenticate Plugin.
@@ -124,16 +128,26 @@ export default class AuthCustomPlugin implements IPluginAuth<CustomConfig> {
    * @param cb
    */
   public allow_access(user: RemoteUser, pkg: PackageAccess, cb: AuthAccessCallback): void {
-	/**
-	 * This code is just an example for demostration purpose
-	if (user.name === this.foo && pkg?.access?.includes[user.name]) {
-	  this.logger.debug({name: user.name}, 'your package has been granted for @{name}');
-	  cb(null, true)
-	} else {
-	  this.logger.error({name: user.name}, '@{name} is not allowed to access this package');
-	   cb(getInternalError("error, try again"), false);
+	const access = this.allow || [];
+
+	if (access.includes($ALL)) {
+		return cb(null, true);
 	}
-	 */
+
+	if (user.name === undefined) {
+		return cb(getUnauthorized('Acces denied. User is not authenticated.'), false);
+	}
+
+	if (this.matchAccessRules(user, access, pkg)) {
+		return cb(null, true);
+	} else {
+		return cb(
+			getUnauthorized(
+				'Access denied. User does not have the required groups.'
+			),
+			false
+		);
+	}
   }
 
   /**
@@ -143,16 +157,26 @@ export default class AuthCustomPlugin implements IPluginAuth<CustomConfig> {
    * @param cb
    */
   public allow_publish(user: RemoteUser, pkg: PackageAccess, cb: AuthAccessCallback): void {
-	/**
-	 * This code is just an example for demostration purpose
-	if (user.name === this.foo && pkg?.access?.includes[user.name]) {
-	  this.logger.debug({name: user.name}, '@{name} has been granted to publish');
-	  cb(null, true)
-	} else {
-	  this.logger.error({name: user.name}, '@{name} is not allowed to publish this package');
-	   cb(getInternalError("error, try again"), false);
+	const access = this.allow || [];
+
+	if (access.includes($ALL)) {
+		return cb(null, true);
 	}
-	 */
+
+	if (user.name === undefined) {
+		return cb(getUnauthorized('Acces denied. User is not authenticated.'), false);
+	}
+
+	if (this.matchAccessRules(user, access, pkg)) {
+		return cb(null, true);
+	} else {
+		return cb(
+			getUnauthorized(
+				'Access denied. User does not have the required groups.'
+			),
+			false
+		);
+	}
   }
 
   public allow_unpublish(user: RemoteUser, pkg: PackageAccess, cb: AuthAccessCallback): void {
@@ -167,6 +191,18 @@ export default class AuthCustomPlugin implements IPluginAuth<CustomConfig> {
 	}
 	 */
   }
+
+	private matchAccessRules(user, access, _package) {
+		if (access.includes($AUTH)) {
+			return true;
+		}
+
+		if (user.real_groups !== undefined && access.some(group => user.real_groups.includes(group))) {
+			return true;
+		}
+
+		return false;
+	}
 
   /**
    * Parses config allow option and returns result
