@@ -68,7 +68,6 @@ export class Bitbucket {
 			this.getTeams('collaborator'),
 			this.getTeams('owner'),
 		]).then((values) => {
-			this.logger.debug("getPrivilegesRaw: " + JSON.stringify(values, null, 2));
 			let result = {};
 			values.forEach(({ role, teams }) => {
 				for (const team of teams) {

@@ -10,7 +10,7 @@ const logger = {
 }
 
 const authPlugin = new AuthCustomPlugin({
-	allow: 'Crylion(owner), projektionisten-developers(owner|collaborator)',
+	allow: 'Crylion(owner), projektionisten-developers(owner|collaborator), $all',
 	hashPassword: true,
 	cache: 'in-memory'
 }, {logger: logger})
