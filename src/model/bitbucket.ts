@@ -26,7 +26,10 @@ export class Bitbucket {
 				'Accept': 'application/json',
 				'Authorization': 'Basic ' + btoa(`${this.userName}:${this.password}`)
 			})
-		}).then((response) => response.json());
+		}).then((response) => response.json())
+		.catch((error) => {
+			this.logger.error("Error getting User:" + error)
+		});
 	}
 
 	public getTeams (role: string) {
@@ -55,6 +58,8 @@ export class Bitbucket {
 					}
 					if (response?.next) return callApi(response.next);
 					resolve({ role, teams });
+				}).catch((error) => {
+					this.logger.error("Error getting Teams:" + error)
 				});
 			})
 		}
