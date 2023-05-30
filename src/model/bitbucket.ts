@@ -46,9 +46,14 @@ export class Bitbucket {
 						'Authorization': 'Basic ' + btoa(`${this.userName}:${this.password}`)
 					})
 				})
-				.then((response) => response.json())
+				.then((response) => {
+					if (response.status === 401) {
+						throw "Invalid Bitbucket Credentials";
+					} else {
+						return response.json()
+					}
+				})
 				.then((response: any) => {
-					// this.logger.debug("getTeams: " + JSON.stringify(response, null, 2));
 					const teamValues: Array<string> = response?.values?.map((x) => x.slug);
 					if (teamValues !== undefined && teamValues.length !== 0) {
 						teams = [
@@ -59,7 +64,7 @@ export class Bitbucket {
 					if (response?.next) return callApi(response.next);
 					resolve({ role, teams });
 				}).catch((error) => {
-					this.logger.error("Error getting Teams:" + error)
+					this.logger.error("Error getting Teams: " + error)
 				});
 			})
 		}
